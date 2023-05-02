@@ -4,7 +4,8 @@
 //
 ///////////////////////////////////////////////////////////////////
 
-#include "DetectorConstruction.hh"
+#include "geometry/LaBrDetector.hh"
+#include "Analysis.hh"
 
 #include "G4Material.hh"
 #include "G4MaterialTable.hh"
@@ -21,15 +22,19 @@
 #include "G4LogicalBorderSurface.hh"
 #include "G4OpticalSurface.hh"
 
+#include "G4SDManager.hh"
+#include "G4Event.hh"
+
+#include "G4MultiFunctionalDetector.hh"
+#include "G4PSEnergyDeposit.hh"
+#include "G4SDParticleFilter.hh"
+
 using namespace CLHEP;
 
-DetectorConstruction::DetectorConstruction()
-{ }
+#include <memory>
+using std::make_shared;
 
-DetectorConstruction::~DetectorConstruction()
-{ }
-
-G4VPhysicalVolume* DetectorConstruction::Construct()
+G4VPhysicalVolume* LaBrDetector::Construct()
 {
 	
 	//----------------------------------------------------
@@ -225,30 +230,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	// Detector geometry
 	//------------------------------------------------------
 	
-	//     
-	// World
-	//
-	
-	G4double WorldSize= 30.*cm;
-	
-	G4Box* 
-    solidWorld = new G4Box("World",		       	                  //its name
-						   WorldSize/2,WorldSize/2,WorldSize/2);  //its size
-	
-	G4LogicalVolume* 
-    logicWorld = new G4LogicalVolume(solidWorld,      	//its solid
-									 Vacuum,	        //its material
-									 "World");		    //its name
-	
-	G4VPhysicalVolume* 
-    physiWorld = new G4PVPlacement(0,			    //no rotation
-								   G4ThreeVector(),	//at (0,0,0)
-								   "World",		    //its name
-								   logicWorld,		//its logical volume
-								   NULL,		    //its mother  volume
-								   false,	       	//no boolean operation
-								   0);			    //copy number
-	
 	
 	//
 	// Detector 
@@ -282,8 +263,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0.*cm);
 	
 	G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
-														  "Reflector",logicReflector,
-														  physiWorld,false,0);
+														  logicReflector,"Reflector",
+														  GetMotherVolume(),false,0);
 	
 	//Crystal
 	
@@ -313,8 +294,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 													ReflectorHalfLength+PMTWindowHalfLength);
 	
 	G4VPhysicalVolume* physiPMTWindow = new G4PVPlacement(0,positionPMTWindow,
-														  "PMTWindow",logicPMTWindow,
-														  physiWorld,false,0);
+														  logicPMTWindow,"PMTWindow",
+														  GetMotherVolume(),false,0);
 	
 	// Photocathode
 	
@@ -329,8 +310,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 												  +CathodeHalfLength);
 	
 	G4VPhysicalVolume* physiCathode = new G4PVPlacement(0,positionCathode,
-														"Cathode",logicCathode,
-														physiWorld,false,0);
+														logicCathode,"Cathode",
+														GetMotherVolume(),false,0);
 	
 	
 	//------------------------------------------------------
@@ -381,8 +362,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	// visualization attributes
 	//------------------------------------------------------
 	
-	logicWorld->SetVisAttributes(G4VisAttributes::GetInvisible());
-	
 	//Green color for scintillator crystal
 	G4VisAttributes* Att1= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
 	logicCrystal->SetVisAttributes(Att1);
@@ -400,8 +379,93 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	logicCathode->SetVisAttributes(Att4);
     
 	//
-	// always return the physical World
+	// Place the logic volumes
 	//
-	
-	return physiWorld;
+
+	/*
+	PlaceVolume(logicCrystal, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
+	PlaceVolume(logicReflector, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
+	PlaceVolume(logicPMTWindow, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
+	PlaceVolume(logicCathode, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
+	*/
+
+	return nullptr;
+}
+
+void LaBrDetector::ConstructSDandField()
+{
+    // Energy deposition in the BGO crystals is tracked with a primitive scorer
+
+    // attempts to delete this pointer in the destructor result in error,
+    // apparently detectors are cleaned up by Geant4
+    auto *det = new G4MultiFunctionalDetector("LaBrCrystal");
+    G4SDManager::GetSDMpointer()->AddNewDetector(det);
+
+    auto *psEdep = new G4PSEnergyDeposit("Edep",1);
+    det->RegisterPrimitive(psEdep);
+
+    SetSensitiveDetector( "Crystal", det);
+}
+
+void LaBrDetector::SetupOutput()
+{
+    auto *am = G4AnalysisManager::Instance();
+
+    fTupleID = am->CreateNtuple("EdepLaBr", "Energy Deposition in LaBr detector");
+
+    G4cout << "LaBrDetector::SetupOutput - " << fTupleID << G4endl;
+
+    am->CreateNtupleDColumn("LaBr");
+    am->CreateNtupleDColumn("X");
+    am->CreateNtupleDColumn("Y");
+    am->CreateNtupleDColumn("Z");
+
+
+    am->FinishNtuple();
+}
+
+void LaBrDetector::FillOutput(const G4Event *event)
+{
+    // Get hit collection ID
+    if (fHCID == -1 )
+    {
+        fHCID = G4SDManager::GetSDMpointer()->GetCollectionID("LaBrCrystal/Edep");
+    }
+
+    // Get sum values from hits collections
+    //
+    G4double Edep[6] = {0, 0, 0, 0, 0, 0};
+    G4double EdepSum = 0.0;
+
+    auto hitsCollection
+        = static_cast<G4THitsMap<G4double>*>(
+              event->GetHCofThisEvent()->GetHC(fHCID));
+
+    for (auto it : *hitsCollection->GetMap())
+    {
+        Edep[it.first] = *(it.second);
+        EdepSum += *(it.second);
+    }
+
+    // Fill ntuple
+    auto *am = G4AnalysisManager::Instance();
+
+    for (int i = 0; i < 6; i++)
+    {
+        am->FillNtupleDColumn(fTupleID, i, Edep[i] / CLHEP::MeV);
+    }
+    am->FillNtupleDColumn(fTupleID, 6, EdepSum / CLHEP::MeV);
+
+    am->AddNtupleRow(fTupleID);
+}
+
+void LaBrDetector::FillPosition(G4ThreeVector &vec)
+{
+
+  auto *am = G4AnalysisManager::Instance();
+  
+  am->FillNtupleDColumn(fTupleID, 7, vec.getX());
+  am->FillNtupleDColumn(fTupleID, 8, vec.getY());
+  am->FillNtupleDColumn(fTupleID, 9, vec.getZ());
+
 }

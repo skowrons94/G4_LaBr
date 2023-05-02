@@ -9,11 +9,12 @@
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 
+#include "GeometryManager.hh"
+
 #ifdef G4UI_USE_TCSH
 #include "G4UItcsh.hh"
 #endif
 
-#include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 	G4RunManager* runManager = new G4RunManager;
 	
 	// set mandatory initialization classes
-	runManager->SetUserInitialization(new DetectorConstruction);
+	runManager->SetUserInitialization(GeometryManager::GetInstance());
 	runManager->SetUserInitialization(new PhysicsList);
 		
 	// set aditional user action classes

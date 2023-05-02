@@ -6,6 +6,7 @@
 
 #include "RunAction.hh"
 #include "Analysis.hh"
+#include "GeometryManager.hh"
 
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
@@ -14,10 +15,20 @@
 #include "G4Run.hh"
 #include "G4ios.hh"
 
+#include "G4UIcmdWithAString.hh"
+
+#include <memory>
+using std::shared_ptr;
+
 #include <iomanip>
 
 RunAction::RunAction() : G4UserRunAction()
 {
+
+	  m_setFileNameCmd = make_shared<G4UIcmdWithAString>("/run/setFileName", this);
+      m_setFileNameCmd->SetGuidance("Set output file name.");
+      m_setFileNameCmd->SetParameterName("file name", false);
+
 	  // Create analysis manager
 	  // The choice of analysis technology is done via selecting of a namespace
 	  // in B4Analysis.hh
@@ -46,34 +57,34 @@ RunAction::RunAction() : G4UserRunAction()
 	  xmax = 12e3; // in keV
 	  binsize = 2; // in keV
 	  nbins= (int)((xmax-xmin)/binsize);
-	  analysisManager->CreateH1("Histo1","Edep in Crystal", nbins, xmin*keV, xmax*keV);
+	  analysisManager->CreateH1("Edep","Edep in Crystal", nbins, xmin*keV, xmax*keV);
 
 	  xmin = 0; //
 	  xmax = 2e3; //
 	  binsize = 2; //
 	  nbins= (int)(xmax-xmin)/binsize;
-          analysisManager->CreateH1("Histo2","Absorbed Photons", nbins, xmin, xmax);
+          analysisManager->CreateH1("Npho","Absorbed Photons", nbins, xmin, xmax);
 
       // Here we need some units!
       xmin = 0; // in ns
 	  xmax = 500; // in ns
 	  binsize = 2; // in ns
 	  nbins= (int)(xmax-xmin)/binsize;
-          analysisManager->CreateH1("Histo3","Time of Absorption", nbins, xmin, xmax*ns);
+          analysisManager->CreateH1("Tabs","Time of Absorption", nbins, xmin, xmax*ns);
 
       xmin = 0; // in keV
 	  xmax = 12e3; // in keV
 	  binsize = 2; // in keV
 	  nbins= (int)((xmax-xmin)/binsize);
-	  analysisManager->CreateH1("Histo4","Energy of Primary Particles", nbins, xmin*keV, xmax*keV);
+	  analysisManager->CreateH1("Egam","Energy of Primary Particles", nbins, xmin*keV, xmax*keV);
 
 	  // Creating ntuple
 	  //
-	  analysisManager->CreateNtuple("B4", "Edep and TrackL...");
+	  analysisManager->CreateNtuple("Data", "Data");
 	  analysisManager->CreateNtupleDColumn("Edep");
-	  analysisManager->CreateNtupleDColumn("nAbsPhotons");
-	  analysisManager->CreateNtupleDColumn("absTime");
-	  analysisManager->CreateNtupleDColumn("EPrimaries");
+	  analysisManager->CreateNtupleDColumn("Npho");
+	  analysisManager->CreateNtupleDColumn("Tabs");
+	  analysisManager->CreateNtupleDColumn("Egam");
 	  analysisManager->FinishNtuple();
 
 }
@@ -93,8 +104,7 @@ void RunAction::BeginOfRunAction(const G4Run*)
 
 	  // Open an output file
 	  //
-	  G4String fileName = "../data/Edep.root";
-	  analysisManager->OpenFile(fileName);
+	  analysisManager->OpenFile(fFileName);
 }
 
 void RunAction::EndOfRunAction(const G4Run*)
@@ -125,4 +135,14 @@ void RunAction::EndOfRunAction(const G4Run*)
 
 }
 
-
+void RunAction::SetNewValue(G4UIcommand* command, G4String newValue)
+{
+    if (command == m_setFileNameCmd.get())
+    {
+        fFileName = newValue;
+    }
+    else
+    {
+        G4cerr << "Unknown command in RunAction!" << G4endl;
+    }
+}

@@ -3,6 +3,8 @@
 //#include "Randomize.hh" // do we really need this?
 #include <iomanip>
 
+#include "GeometryManager.hh"
+
 #include "RunAction.hh"
 #include "G4GeneralParticleSource.hh"
 
@@ -49,7 +51,8 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 {
 
 	  // Accumulate statistics
-	  //
+	  //auto *gm = GeometryManager::GetInstance();
+      //gm->FillOutputs(evt);
 
 	  // get analysis manager
 	  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
