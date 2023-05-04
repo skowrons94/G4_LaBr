@@ -235,19 +235,26 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	// Detector 
 	//
 	
-	G4double ScintHalfLength =1.5*cm;
-	G4double ScintRadius = 2.*cm;
+	G4double ScintHalfLength = 7.62*cm;
+	G4double ScintRadius = 4.45*cm;
 	
-    G4double ReflectorThickness = 0.5*mm;
+    G4double ReflectorThickness = 1.0*mm;
 	G4double ReflectorHalfLength = ScintHalfLength+ReflectorThickness;
 	G4double ReflectorRadius = ScintRadius+ReflectorThickness;
 	
-	G4double PMTWindowHalfLength = 1.0*mm;
-	G4double PMTWindowRadius = 1.8*cm;
+	G4double PMTHalfLength = 8.55*cm;
+	G4double PMTRadiusLarge = 6.4*cm;
+	G4double PMTRadiusLow = 2.9*cm;
 	
 	G4double CathodeHalfLength = 0.005*mm;
 	G4double CathodeRadius =1.9*cm;
 	
+	G4double HousingHalfLengthLow = 7.45*cm;
+	G4double HousingHalfLengthHigh = 9.2*cm;
+	G4double HousingRadiusLow = 4.9*cm;
+	G4double HousingRadiusMid = 7.25*cm;
+	G4double HousingRadiusHigh = 3.0*cm;
+
 	G4double StartPhi = 0.*deg;
 	G4double DeltaPhi = 360.*deg;
 	
@@ -283,19 +290,47 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	
 	
 	// PMT window
+
+	const G4double phiStart = 0*deg;
+	const G4double phiTotal = 360*deg;
+
+	const  G4int  pmtNZPlanes = 4;
+	const  G4double pmtZPlanes[] =
+	{
+		-PMTHalfLength,
+		2*PMTHalfLength/3 - PMTHalfLength,
+		2*2*PMTHalfLength/3 - PMTHalfLength,
+		2*PMTHalfLength - PMTHalfLength
+	};
+
+	const G4double pmtRInner[] =
+	{
+		0,
+		0,
+		0,
+		0
+	};
+
+	const G4double pmtROuter[] =
+	{
+		PMTRadiusLarge,
+		PMTRadiusLarge,
+		PMTRadiusLow,
+		PMTRadiusLow
+	};
+
+	G4Polycone* solidPMT = new G4Polycone("PMT",phiStart,phiTotal,pmtNZPlanes,
+			pmtZPlanes,pmtRInner,pmtROuter);
 	
-	G4Tubs* solidPMTWindow = new G4Tubs("PMTWindow",0.*cm,PMTWindowRadius,
-										PMTWindowHalfLength,StartPhi,DeltaPhi);
+	G4LogicalVolume* logicPMT = new G4LogicalVolume(solidPMT,
+														  Quartz,"PMT");
 	
-	G4LogicalVolume* logicPMTWindow = new G4LogicalVolume(solidPMTWindow,
-														  Quartz,"PMTWindow");
+	G4ThreeVector positionPMT = G4ThreeVector(0.*cm,0.*cm,
+													ReflectorHalfLength+PMTHalfLength);
 	
-	G4ThreeVector positionPMTWindow = G4ThreeVector(0.*cm,0.*cm,
-													ReflectorHalfLength+PMTWindowHalfLength);
-	
-	G4VPhysicalVolume* physiPMTWindow = new G4PVPlacement(0,positionPMTWindow,
-														  logicPMTWindow,"PMTWindow",
-														  GetMotherVolume(),false,0);
+	G4VPhysicalVolume* physiPMT = new G4PVPlacement(0,positionPMT,
+													logicPMT,"PMT",
+													GetMotherVolume(),false,0);
 	
 	// Photocathode
 	
@@ -306,13 +341,59 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 														K2CsSb,"Cathode");
 	
 	G4ThreeVector positionCathode = G4ThreeVector(0.*cm,0.*cm,
-												  ReflectorHalfLength+2.*PMTWindowHalfLength
+												  ReflectorHalfLength+2.*PMTHalfLength
 												  +CathodeHalfLength);
 	
 	G4VPhysicalVolume* physiCathode = new G4PVPlacement(0,positionCathode,
 														logicCathode,"Cathode",
 														GetMotherVolume(),false,0);
+
+	// Housing
+
+	const  G4double offset = ( HousingHalfLengthHigh + HousingHalfLengthLow ) / 2;
+	const  G4int  housingNZPlanes = 6;
+	const  G4double housingZPlanes[] =
+	{
+		- offset,
+		2*HousingHalfLengthLow - offset,
+		2*HousingHalfLengthLow - offset,
+		2*HousingHalfLengthLow + 2*HousingHalfLengthHigh/3 - offset,
+		2*HousingHalfLengthLow + 2*2*HousingHalfLengthHigh/3 - offset,
+		2*HousingHalfLengthLow + 2*HousingHalfLengthHigh - offset,
+	};
+
+	const G4double housingRInner[] =
+	{
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	};
+
+	const G4double housingROuter[] =
+	{
+		HousingRadiusLow,
+		HousingRadiusLow,
+		HousingRadiusMid,
+		HousingRadiusMid,
+		HousingRadiusHigh,
+		HousingRadiusHigh
+	};
+
+	G4Polycone* solidHousing = new G4Polycone("PMT",phiStart,phiTotal,housingNZPlanes,
+											housingZPlanes,housingRInner,housingROuter);
+
+	G4LogicalVolume* logicHousing = new G4LogicalVolume(solidHousing,AluR,
+														"Housing");
 	
+	G4ThreeVector positionHousing = G4ThreeVector(0.*cm,0.*cm,
+                                                  0);
+	
+		G4VPhysicalVolume* physiHousing = new G4PVPlacement(0,positionHousing,
+														logicHousing,"Housing",
+														GetMotherVolume(),false,0);
 	
 	//------------------------------------------------------
 	// Surfaces and boundary processes
@@ -342,7 +423,7 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	OpCryPMTWinSurface->SetFinish(polished);
 	
 	G4LogicalBorderSurface* CryPMTWinSurface = 
-    new G4LogicalBorderSurface("CryPMTWinSurface",physiCrystal,physiPMTWindow,
+    new G4LogicalBorderSurface("CryPMTWinSurface",physiCrystal,physiPMT,
 							   OpCryPMTWinSurface);
 	
 	// PMT window - photocathode surface
@@ -354,7 +435,7 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	OpPMTWinCathSurface->SetFinish(polished);
 	
 	G4LogicalBorderSurface* PMTWinCathSurface = 
-    new G4LogicalBorderSurface("CathodeSurface",physiPMTWindow,physiCathode,
+    new G4LogicalBorderSurface("CathodeSurface",physiPMT,physiCathode,
 							   OpPMTWinCathSurface);
 	
 	
@@ -372,11 +453,15 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	
 	//Blue color for PMT window
 	G4VisAttributes* Att3= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
-	logicPMTWindow->SetVisAttributes(Att3);
+	logicPMT->SetVisAttributes(Att3);
 	
 	//White color for the absorber photocathode
 	G4VisAttributes* Att4= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
 	logicCathode->SetVisAttributes(Att4);
+
+	//Grey color for the absorber photocathode
+	G4VisAttributes* Att5= new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+	logicHousing->SetVisAttributes(Att5);
     
 	//
 	// Place the logic volumes
