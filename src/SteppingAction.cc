@@ -44,26 +44,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		
 		if (EdepStep > 0.) eventAction->EdepInCrystal = eventAction->EdepInCrystal + EdepStep;
 
-		//count scintillating photons and kill the photons after the first step
-		// if (particleName == "opticalphoton"){
-		// 	eventAction->nAbsPhotons++;
-		// 	eventAction->absTime = aStep -> GetPreStepPoint() -> GetGlobalTime();
-		// 	aStep->GetTrack()->SetTrackStatus(fStopAndKill);
-		// }
-
-
 	}
-	
-	// check if the photon is absorbed in the sensitive volume
-	if (currentPhysicalName == "Cathode"){
-		const G4String ProcessName = 
-		aStep -> GetPostStepPoint() -> GetProcessDefinedStep() -> GetProcessName();
-		if (ProcessName == "OpAbsorption"){ 
-			
-			eventAction->nAbsPhotons++;
-			
-			eventAction->absTime = aStep -> GetPreStepPoint() -> GetGlobalTime();
-		} 
-	}
+
 }
 

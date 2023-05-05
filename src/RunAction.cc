@@ -29,6 +29,7 @@ RunAction::RunAction() : G4UserRunAction()
       m_setFileNameCmd->SetGuidance("Set output file name.");
       m_setFileNameCmd->SetParameterName("file name", false);
 
+		/*
 	  // Create analysis manager
 	  // The choice of analysis technology is done via selecting of a namespace
 	  // in B4Analysis.hh
@@ -55,22 +56,9 @@ RunAction::RunAction() : G4UserRunAction()
 
 	  xmin = 0; // in keV
 	  xmax = 12e3; // in keV
-	  binsize = 2; // in keV
+	  binsize = 1; // in keV
 	  nbins= (int)((xmax-xmin)/binsize);
 	  analysisManager->CreateH1("Edep","Edep in Crystal", nbins, xmin*keV, xmax*keV);
-
-	  xmin = 0; //
-	  xmax = 2e3; //
-	  binsize = 2; //
-	  nbins= (int)(xmax-xmin)/binsize;
-          analysisManager->CreateH1("Npho","Absorbed Photons", nbins, xmin, xmax);
-
-      // Here we need some units!
-      xmin = 0; // in ns
-	  xmax = 500; // in ns
-	  binsize = 2; // in ns
-	  nbins= (int)(xmax-xmin)/binsize;
-          analysisManager->CreateH1("Tabs","Time of Absorption", nbins, xmin, xmax*ns);
 
       xmin = 0; // in keV
 	  xmax = 12e3; // in keV
@@ -82,10 +70,9 @@ RunAction::RunAction() : G4UserRunAction()
 	  //
 	  analysisManager->CreateNtuple("Data", "Data");
 	  analysisManager->CreateNtupleDColumn("Edep");
-	  analysisManager->CreateNtupleDColumn("Npho");
-	  analysisManager->CreateNtupleDColumn("Tabs");
 	  analysisManager->CreateNtupleDColumn("Egam");
 	  analysisManager->FinishNtuple();
+	  */
 
 }
 
@@ -96,43 +83,23 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run*)
 {
-	  //inform the runManager to save random number seed
-	  //G4RunManager::GetRunManager()->SetRandomNumberStore(true);
+	// Get analysis manager
+	G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	analysisManager->SetNtupleMerging(true);
 
-	  // Get analysis manager
-	  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	// Open an output file
+	analysisManager->OpenFile(fFileName);
 
-	  // Open an output file
-	  //
-	  analysisManager->OpenFile(fFileName);
+	// Create outputs
+	auto* gm = GeometryManager::GetInstance();
+    gm->SetupOutputs();
 }
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
-	  // print histogram statistics
-	  //
-	  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-	  if ( analysisManager->GetH1(1) ) {
-	    G4cout << G4endl << " ----> print histograms statistic ";
-	    if(isMaster) {
-	      G4cout << "for the entire run " << G4endl << G4endl;
-	    }
-	    else {
-	      G4cout << "for the local thread " << G4endl << G4endl;
-	    }
-
-	    G4cout << G4endl << " EAbs : mean = "
-	       << G4BestUnit(analysisManager->GetH1(1)->mean(), "Energy")
-	       << " rms = "
-	       << G4BestUnit(analysisManager->GetH1(1)->rms(),  "Energy") << G4endl;
-
-	  }
-
-	  // save histograms & ntuple
-	  //
-	  analysisManager->Write();
-	  analysisManager->CloseFile();
-
+	auto analysisManager = G4AnalysisManager::Instance();
+    analysisManager->Write();
+    analysisManager->CloseFile();
 }
 
 void RunAction::SetNewValue(G4UIcommand* command, G4String newValue)

@@ -27,15 +27,6 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList()
 	// EM Physics
 	RegisterPhysics(new G4EmStandardPhysics());
 	
-	// Optical Physics
-	G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-	RegisterPhysics(opticalPhysics);
-	
-//	opticalPhysics->SetScintillationYieldFactor(0.08);
-//	opticalPhysics->SetScintillationExcitationRatio(0.);
-	
-//	opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
-	
 }
 
 

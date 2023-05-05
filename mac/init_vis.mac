@@ -1,3 +1,5 @@
+/run/numberOfThreads 4
+
 /control/verbose 2
 /control/saveHistory
 /run/verbose 2
@@ -7,7 +9,7 @@
 
 /gps/particle gamma
 /gps/number 1
-/gps/pos/centre  0 0 0  mm
+/gps/pos/centre  0 0 -10  cm
 /gps/energy 662. keV
 /gps/ang/type iso
 

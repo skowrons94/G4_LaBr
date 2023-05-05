@@ -25,8 +25,6 @@ class LaBrDetector : public GeometryObject
     virtual void SetupOutput();
     virtual void FillOutput(const G4Event *event);
 
-    void FillPosition(G4ThreeVector &vec);
-
   private:
     int fHCID = -1; /// Hit collection ID for energy deposition scorer
     int fTupleID = -1; /// tuple ID for energy deposition output

@@ -7,6 +7,8 @@
 #include "geometry/LaBrDetector.hh"
 #include "Analysis.hh"
 
+#include "G4NistManager.hh"
+
 #include "G4Material.hh"
 #include "G4MaterialTable.hh"
 #include "G4Element.hh"
@@ -52,10 +54,9 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	
 	G4Material* Vacuum = new G4Material(name="Galactic", z=1., a=1.01*g/mole, 
 										density,kStateGas,temperature,pressure);
-	
-	
+
 	//
-	// define simple Elements
+	// define elements
 	//
 	
 	// O
@@ -93,28 +94,18 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	// La
 	a = 138.905*g/mole;
 	G4Element* La = new G4Element(name="Lanthanum",symbol="La" , z= 57., a);
-	
-	
+
 	//
-	// define simple materials
+	// define materials
 	//
-	
-	// Al reflector
-	density = 2.700*g/cm3;
-	a = 26.98*g/mole;
-	G4Material* AluR = new G4Material(name="AluRef", z=13., a, density);
-	
-	// MgO reflector
-	density = 2.0*g/cm3;
-	G4Material* MgO = new G4Material(name="MgO", density, ncomponents=2);
-	MgO->AddElement(Mg, natoms=1);
-	MgO->AddElement(O, natoms=1);
-		
-	// LaCl3
-	density = 3.85*g/cm3;
-	G4Material* LaCl3 = new G4Material(name="LaCl3", density, ncomponents=2);
-	LaCl3->AddElement(Cl, natoms=3);
-	LaCl3->AddElement(La, natoms=1);
+
+	G4NistManager* man = G4NistManager::Instance();
+
+	// Aluminum
+	G4Material* Al = man->FindOrBuildMaterial("G4_Al");
+
+	// Teflon
+	G4Material* Teflon = man->FindOrBuildMaterial("G4_TEFLON");	
 	
 	// LaBr3
 	density = 5.08*g/cm3;
@@ -122,185 +113,79 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	LaBr3->AddElement(Br, natoms=3);
 	LaBr3->AddElement(La, natoms=1);
 	
-	// Quartz (fused silica)
+	// Quartz
 	density = 2.20*g/cm3;
 	G4Material* Quartz = new G4Material(name="Quartz", density, ncomponents=2);
 	Quartz->AddElement(Si, natoms=1);
 	Quartz->AddElement(O, natoms=2);
-	
-	// Photocathode Material 
-	// (Bialkali K2CsSb,  Density=?, Thickness=25.*nm?)
-	density = 2.00*g/cm3;
-	G4Material* K2CsSb = new G4Material(name="K2CsSb", density, ncomponents=3);
-	K2CsSb->AddElement(K, natoms=2);
-	K2CsSb->AddElement(Cs, natoms=1);
-	K2CsSb->AddElement(Sb, natoms=1);
-	
-	//------------------------------------------------------
-	// Optical properties
-	//------------------------------------------------------
-	
-	const G4int nEntries = 2;
-	
-	G4double PhotonEnergy[nEntries] = {1.0*eV,7.0*eV};
-	
-	// MgO reflector
-	
-	G4double MgORefractionIndex[nEntries] = {1.0,1.0};
-	
-	G4double MgOAbsorptionLength[nEntries] = {1.0E-9*m,1.0E-9*m};
-	
-	G4MaterialPropertiesTable* MgOMPT = new G4MaterialPropertiesTable();
-	
-	MgOMPT->AddProperty("RINDEX",PhotonEnergy,MgORefractionIndex,
-						nEntries);
-	MgOMPT->AddProperty("ABSLENGTH",PhotonEnergy,MgOAbsorptionLength,
-						nEntries);
-	
-	MgO->SetMaterialPropertiesTable(MgOMPT);
-	
-	// LaBr3
-	
-	G4double LaBr3RefractionIndex[nEntries] = {1.9,1.9};
-	
-	G4double LaBr3AbsorptionLength[nEntries] = {50.*cm,50.*cm};
-	
-	G4MaterialPropertiesTable* LaBr3MPT = new G4MaterialPropertiesTable();
-	
-	LaBr3MPT->AddProperty("RINDEX",PhotonEnergy,LaBr3RefractionIndex,
-						  nEntries);
-	LaBr3MPT->AddProperty("ABSLENGTH",PhotonEnergy,LaBr3AbsorptionLength,
-						  nEntries);
-	
-	G4double ScintEnergy[nEntries] = {3.26*eV,3.44*eV};
-	G4double ScintFast[nEntries] = {1.0,1.0};
-	
-	LaBr3MPT->AddProperty("SCINTILLATIONCOMPONENT1",ScintEnergy,ScintFast,nEntries);
-	
-	LaBr3MPT->AddConstProperty("SCINTILLATIONYIELD",63./keV); 
-	LaBr3MPT->AddConstProperty("RESOLUTIONSCALE",1.);
-	LaBr3MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1",20.*ns);
-//	LaBr3MPT->AddConstProperty("YIELDRATIO",1.);
-	
-	LaBr3->SetMaterialPropertiesTable(LaBr3MPT);
-		
-	// Quartz
-	
-	G4double QuartzRefractionIndex[nEntries] = {1.47,1.47};
-	
-	G4double QuartzAbsorptionLength[nEntries] = {3.0*cm,3.0*cm};
-	
-	G4MaterialPropertiesTable* QuartzMPT = new G4MaterialPropertiesTable();
-	
-	QuartzMPT->AddProperty("RINDEX",PhotonEnergy,QuartzRefractionIndex,
-						   nEntries);
-	QuartzMPT->AddProperty("ABSLENGTH",PhotonEnergy,QuartzAbsorptionLength,
-						   nEntries);
-	
-	Quartz->SetMaterialPropertiesTable(QuartzMPT);
-	
-	// K2CsSb (Bialcali Photocathode)
-	
-	G4double K2CsSbRefractionIndex[nEntries] = {1.47,1.47};
-	
-	G4double K2CsSbAbsorptionLength[nEntries] = {1.0E-9*m,1.0E-9*m};
-	
-	G4MaterialPropertiesTable* K2CsSbMPT = new G4MaterialPropertiesTable();
-	
-	K2CsSbMPT->AddProperty("RINDEX",PhotonEnergy,K2CsSbRefractionIndex,
-						   nEntries);
-	K2CsSbMPT->AddProperty("ABSLENGTH",PhotonEnergy,K2CsSbAbsorptionLength,
-						   nEntries);
-	
-	K2CsSb->SetMaterialPropertiesTable(K2CsSbMPT);
-	
-	// Vacuum
-	
-	G4double vacRefractionIndex[nEntries] = {1.0,1.0};
-	
-	
-	G4MaterialPropertiesTable* vacMPT = new G4MaterialPropertiesTable();
-	vacMPT->AddProperty("RINDEX",PhotonEnergy,vacRefractionIndex,
-						nEntries);
-	
-	
-	Vacuum->SetMaterialPropertiesTable(vacMPT);
-	
+
 	//------------------------------------------------------
 	// Detector geometry
 	//------------------------------------------------------
 	
 	
 	//
-	// Detector 
+	// Positions
 	//
-	
-	G4double ScintHalfLength = 7.62*cm;
-	G4double ScintRadius = 4.45*cm;
-	
-    G4double ReflectorThickness = 1.0*mm;
-	G4double ReflectorHalfLength = ScintHalfLength+ReflectorThickness;
-	G4double ReflectorRadius = ScintRadius+ReflectorThickness;
-	
-	G4double PMTHalfLength = 8.55*cm;
-	G4double PMTRadiusLarge = 6.4*cm;
-	G4double PMTRadiusLow = 2.9*cm;
-	
-	G4double CathodeHalfLength = 0.005*mm;
-	G4double CathodeRadius =1.9*cm;
-	
-	G4double HousingHalfLengthLow = 7.45*cm;
-	G4double HousingHalfLengthHigh = 9.2*cm;
-	G4double HousingRadiusLow = 4.9*cm;
-	G4double HousingRadiusMid = 7.25*cm;
-	G4double HousingRadiusHigh = 3.0*cm;
+
+	G4double ScintLength = 15.24*cm;
+
+	G4double ReflectorStart = 2*mm;
+	G4double ScintStart = 5*mm;
+	G4double PMTStart = ScintStart + ScintLength;
 
 	G4double StartPhi = 0.*deg;
-	G4double DeltaPhi = 360.*deg;
-	
-	
-	// Reflector
-	
-	G4Tubs* solidReflector = new G4Tubs("Reflector",0.*cm,
-										ReflectorRadius,ReflectorHalfLength,StartPhi,DeltaPhi);
-	
-	G4LogicalVolume* logicReflector = new G4LogicalVolume(solidReflector,MgO,
-														  "Reflector");
-	
-	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0.*cm);
-	
-	G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
-														  logicReflector,"Reflector",
-														  GetMotherVolume(),false,0);
+	G4double DeltaPhi = 360.*deg;	
 	
 	//Crystal
+
+	G4double ScintRadius = 4.45*cm;
+
+	const  G4int  crystalNZPlanes = 2;
+	const  G4double crystalZPlanes[] =
+	{
+		0,
+		ScintLength
+	};
+
+	const G4double crystalRInner[] =
+	{
+		0,
+		0
+	};
+
+	const G4double crystalROuter[] =
+	{
+		ScintRadius,
+		ScintRadius
+	};
 	
-	G4Tubs* solidCrystal = new G4Tubs("Crystal", 0.*cm, ScintRadius,
-									  ScintHalfLength,StartPhi,DeltaPhi);
+	G4Polycone* solidCrystal = new G4Polycone("PMT",StartPhi,DeltaPhi,crystalNZPlanes,
+										      crystalZPlanes,crystalRInner,crystalROuter);
 	
 	G4LogicalVolume* logicCrystal = new G4LogicalVolume(solidCrystal,LaBr3,
 														"Crystal");
 	
-	G4ThreeVector positionCrystal = G4ThreeVector(0.*cm,0.*cm,
-                                                  ReflectorThickness);
+	G4ThreeVector positionCrystal = G4ThreeVector(0.*cm,0.*cm,ScintStart);
 	
 	G4VPhysicalVolume* physiCrystal = new G4PVPlacement(0,positionCrystal,
-														"Crystal",logicCrystal,
-														physiReflector,false,0);
+														logicCrystal, "Crystal",
+														GetMotherVolume(),false,0);
 	
 	
-	// PMT window
+	// PMT
 
-	const G4double phiStart = 0*deg;
-	const G4double phiTotal = 360*deg;
+	G4double PMTLength = 17.1*cm;
+	G4double PMTRadiusLarge = 6.4*cm;
+	G4double PMTRadiusLow = 2.9*cm;
 
 	const  G4int  pmtNZPlanes = 4;
 	const  G4double pmtZPlanes[] =
 	{
-		-PMTHalfLength,
-		2*PMTHalfLength/3 - PMTHalfLength,
-		2*2*PMTHalfLength/3 - PMTHalfLength,
-		2*PMTHalfLength - PMTHalfLength
+		0,
+		PMTLength/3,
+		2*PMTLength/3,
+		PMTLength
 	};
 
 	const G4double pmtRInner[] =
@@ -319,56 +204,96 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 		PMTRadiusLow
 	};
 
-	G4Polycone* solidPMT = new G4Polycone("PMT",phiStart,phiTotal,pmtNZPlanes,
-			pmtZPlanes,pmtRInner,pmtROuter);
+	G4Polycone* solidPMT = new G4Polycone("PMT",StartPhi,DeltaPhi,pmtNZPlanes,
+									      pmtZPlanes,pmtRInner,pmtROuter);
 	
 	G4LogicalVolume* logicPMT = new G4LogicalVolume(solidPMT,
-														  Quartz,"PMT");
+													Quartz,"PMT");
 	
-	G4ThreeVector positionPMT = G4ThreeVector(0.*cm,0.*cm,
-													ReflectorHalfLength+PMTHalfLength);
+	G4ThreeVector positionPMT = G4ThreeVector(0.*cm,0.*cm,PMTStart);
 	
 	G4VPhysicalVolume* physiPMT = new G4PVPlacement(0,positionPMT,
 													logicPMT,"PMT",
 													GetMotherVolume(),false,0);
+
+	// Reflector
+
+	G4double ReflectorRadiusOuter = 4.7*cm;
+
+	const  G4int  reflectorNZPlanes = 4;
+	const  G4double reflectorZPlanes[] =
+	{
+		ReflectorStart,
+		ScintStart,
+		ScintStart,
+		PMTStart
+	};
+
+	const G4double reflectorRInner[] =
+	{
+		0,
+		0,
+		ScintRadius,
+		ScintRadius
+	};
+
+	const G4double reflectorROuter[] =
+	{
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter
+	};
+
+	G4Polycone* solidReflector = new G4Polycone("PMT",StartPhi,DeltaPhi,reflectorNZPlanes,
+											    reflectorZPlanes,reflectorRInner,reflectorROuter);
+
+	G4LogicalVolume* logicReflector = new G4LogicalVolume(solidReflector,Teflon,
+														  "Reflector");
 	
-	// Photocathode
+	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0);
 	
-	G4Tubs* solidCathode = new G4Tubs("Cathode",0.*cm,CathodeRadius,
-									  CathodeHalfLength,StartPhi,DeltaPhi);
-	
-	G4LogicalVolume* logicCathode = new G4LogicalVolume(solidCathode,
-														K2CsSb,"Cathode");
-	
-	G4ThreeVector positionCathode = G4ThreeVector(0.*cm,0.*cm,
-												  ReflectorHalfLength+2.*PMTHalfLength
-												  +CathodeHalfLength);
-	
-	G4VPhysicalVolume* physiCathode = new G4PVPlacement(0,positionCathode,
-														logicCathode,"Cathode",
-														GetMotherVolume(),false,0);
+	G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
+														  logicReflector,"Reflector",
+														  GetMotherVolume(),false,0);
 
 	// Housing
 
-	const  G4double offset = ( HousingHalfLengthHigh + HousingHalfLengthLow ) / 2;
-	const  G4int  housingNZPlanes = 6;
+	G4double HousingLengthLow = 14.9*cm;
+	G4double HousingLengthHigh = 18.4*cm;
+	
+	G4double HousingRadiusLow = 4.9*cm;
+	G4double HousingRadiusMid = 7.25*cm;
+	G4double HousingRadiusHigh = 3.0*cm;
+
+	const  G4int  housingNZPlanes = 11;
 	const  G4double housingZPlanes[] =
 	{
-		- offset,
-		2*HousingHalfLengthLow - offset,
-		2*HousingHalfLengthLow - offset,
-		2*HousingHalfLengthLow + 2*HousingHalfLengthHigh/3 - offset,
-		2*HousingHalfLengthLow + 2*2*HousingHalfLengthHigh/3 - offset,
-		2*HousingHalfLengthLow + 2*HousingHalfLengthHigh - offset,
+		0,
+		ReflectorStart,
+		ReflectorStart,
+		HousingLengthLow,
+		HousingLengthLow,
+		PMTStart,
+		PMTStart,
+		HousingLengthLow + HousingLengthHigh/3,
+		HousingLengthLow + 2*HousingLengthHigh/3,
+		HousingLengthLow + HousingLengthHigh,
+		HousingLengthLow + HousingLengthHigh
 	};
 
 	const G4double housingRInner[] =
 	{
 		0,
 		0,
-		0,
-		0,
-		0,
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter,
+		ReflectorRadiusOuter,
+		PMTRadiusLarge,
+		PMTRadiusLarge,
+		PMTRadiusLow,
+		PMTRadiusLow,
 		0
 	};
 
@@ -376,92 +301,48 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	{
 		HousingRadiusLow,
 		HousingRadiusLow,
+		HousingRadiusLow,
+		HousingRadiusLow,
 		HousingRadiusMid,
 		HousingRadiusMid,
+		HousingRadiusMid,
+		HousingRadiusMid,
+		HousingRadiusHigh,
 		HousingRadiusHigh,
 		HousingRadiusHigh
 	};
 
-	G4Polycone* solidHousing = new G4Polycone("PMT",phiStart,phiTotal,housingNZPlanes,
-											housingZPlanes,housingRInner,housingROuter);
+	G4Polycone* solidHousing = new G4Polycone("PMT",StartPhi,DeltaPhi,housingNZPlanes,
+											  housingZPlanes,housingRInner,housingROuter);
 
-	G4LogicalVolume* logicHousing = new G4LogicalVolume(solidHousing,AluR,
+	G4LogicalVolume* logicHousing = new G4LogicalVolume(solidHousing,Al,
 														"Housing");
 	
-	G4ThreeVector positionHousing = G4ThreeVector(0.*cm,0.*cm,
-                                                  0);
+	G4ThreeVector positionHousing = G4ThreeVector(0.*cm,0.*cm,0);
 	
-		G4VPhysicalVolume* physiHousing = new G4PVPlacement(0,positionHousing,
+	G4VPhysicalVolume* physiHousing = new G4PVPlacement(0,positionHousing,
 														logicHousing,"Housing",
 														GetMotherVolume(),false,0);
-	
-	//------------------------------------------------------
-	// Surfaces and boundary processes
-	//------------------------------------------------------
-	
-	// Reflector - sintillator surface 
-	
-	G4OpticalSurface* OpRefCrySurface = 
-	new G4OpticalSurface("RefCrySurface");
-	
-	OpRefCrySurface->SetType(dielectric_metal);
-	OpRefCrySurface->SetModel(glisur);
-	OpRefCrySurface->SetFinish(polished);
-	
-	G4LogicalBorderSurface* RefCrySurface = 
-    new G4LogicalBorderSurface("RefCrySurface",physiCrystal,
-							   physiReflector,OpRefCrySurface);
-	
-	
-	// Scintillator - PMT window surface 
-	
-	G4OpticalSurface* OpCryPMTWinSurface = 
-	new G4OpticalSurface("CryPMTWinSurface");
-	
-	OpCryPMTWinSurface->SetType(dielectric_dielectric);
-	OpCryPMTWinSurface->SetModel(glisur);
-	OpCryPMTWinSurface->SetFinish(polished);
-	
-	G4LogicalBorderSurface* CryPMTWinSurface = 
-    new G4LogicalBorderSurface("CryPMTWinSurface",physiCrystal,physiPMT,
-							   OpCryPMTWinSurface);
-	
-	// PMT window - photocathode surface
-	
-	G4OpticalSurface* OpPMTWinCathSurface = new G4OpticalSurface("PMTWinCathSurface");
-	
-	OpPMTWinCathSurface->SetType(dielectric_dielectric);
-	OpPMTWinCathSurface->SetModel(glisur);
-	OpPMTWinCathSurface->SetFinish(polished);
-	
-	G4LogicalBorderSurface* PMTWinCathSurface = 
-    new G4LogicalBorderSurface("CathodeSurface",physiPMT,physiCathode,
-							   OpPMTWinCathSurface);
-	
 	
 	//------------------------------------------------------
 	// visualization attributes
 	//------------------------------------------------------
 	
-	//Green color for scintillator crystal
-	G4VisAttributes* Att1= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
-	logicCrystal->SetVisAttributes(Att1);
+	//Green color for crystal
+	G4VisAttributes* green= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
+	logicCrystal->SetVisAttributes(green);
 	
-	//Yellow color for reflector
-	G4VisAttributes* Att2= new G4VisAttributes(G4Colour(1.0,1.0,0.0));
-	logicReflector->SetVisAttributes(Att2);
-	
-	//Blue color for PMT window
-	G4VisAttributes* Att3= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
-	logicPMT->SetVisAttributes(Att3);
-	
-	//White color for the absorber photocathode
-	G4VisAttributes* Att4= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-	logicCathode->SetVisAttributes(Att4);
+	//Blue color for PMT
+	G4VisAttributes* blue= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
+	logicPMT->SetVisAttributes(blue);
 
-	//Grey color for the absorber photocathode
-	G4VisAttributes* Att5= new G4VisAttributes(G4Colour(0.2,0.2,0.2));
-	logicHousing->SetVisAttributes(Att5);
+	//Grey color for housing
+	G4VisAttributes* grey= new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+	logicHousing->SetVisAttributes(grey);
+
+	//White color for the reflector
+	G4VisAttributes* white= new G4VisAttributes(G4Colour(0.8,0.8,0.8));
+	logicReflector->SetVisAttributes(white);
     
 	//
 	// Place the logic volumes
@@ -501,11 +382,7 @@ void LaBrDetector::SetupOutput()
     G4cout << "LaBrDetector::SetupOutput - " << fTupleID << G4endl;
 
     am->CreateNtupleDColumn("LaBr");
-    am->CreateNtupleDColumn("X");
-    am->CreateNtupleDColumn("Y");
-    am->CreateNtupleDColumn("Z");
-
-
+ 
     am->FinishNtuple();
 }
 
@@ -519,8 +396,7 @@ void LaBrDetector::FillOutput(const G4Event *event)
 
     // Get sum values from hits collections
     //
-    G4double Edep[6] = {0, 0, 0, 0, 0, 0};
-    G4double EdepSum = 0.0;
+    G4double Edep = 0;
 
     auto hitsCollection
         = static_cast<G4THitsMap<G4double>*>(
@@ -528,29 +404,12 @@ void LaBrDetector::FillOutput(const G4Event *event)
 
     for (auto it : *hitsCollection->GetMap())
     {
-        Edep[it.first] = *(it.second);
-        EdepSum += *(it.second);
+        Edep = *(it.second);
     }
 
     // Fill ntuple
     auto *am = G4AnalysisManager::Instance();
 
-    for (int i = 0; i < 6; i++)
-    {
-        am->FillNtupleDColumn(fTupleID, i, Edep[i] / CLHEP::MeV);
-    }
-    am->FillNtupleDColumn(fTupleID, 6, EdepSum / CLHEP::MeV);
-
+    am->FillNtupleDColumn(fTupleID, 0, Edep / CLHEP::MeV);
     am->AddNtupleRow(fTupleID);
-}
-
-void LaBrDetector::FillPosition(G4ThreeVector &vec)
-{
-
-  auto *am = G4AnalysisManager::Instance();
-  
-  am->FillNtupleDColumn(fTupleID, 7, vec.getX());
-  am->FillNtupleDColumn(fTupleID, 8, vec.getY());
-  am->FillNtupleDColumn(fTupleID, 9, vec.getZ());
-
 }
