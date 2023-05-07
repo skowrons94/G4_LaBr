@@ -13,8 +13,8 @@
 	 
 	   public:
 	 
-	     // SetCuts()
-	     virtual void SetCuts();
+	    virtual void ConstructParticle();
+  		virtual void SetCuts();
 	 
 	 };
  

@@ -6,11 +6,9 @@
 /Geometry/add LaBrDetector
 /Geometry/LaBrDetector/position 0 0 0 cm
 
-/gps/particle gamma
-/gps/number 1
-/gps/pos/centre  0 0 -10  cm
-/gps/energy 662. keV
-/gps/ang/type iso
+/PrimaryGenerator/select PositronGun
+/PrimaryGenerator/PositronGun/file data/13N_decay.dat
+/PrimaryGenerator/PositronGun/positon 0 0 -10 cm
 
 /run/setFileName sim.root
 

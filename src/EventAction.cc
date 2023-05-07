@@ -8,7 +8,6 @@
 #include "RunAction.hh"
 #include "G4GeneralParticleSource.hh"
 
-#include "PrimaryGeneratorAction.hh"
 #include "G4RunManager.hh"
 
 #include "G4Event.hh"

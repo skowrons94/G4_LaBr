@@ -7,34 +7,12 @@
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-#include "G4UIterminal.hh"
 
 #include "GeometryManager.hh"
 
-#ifdef G4UI_USE_TCSH
-#include "G4UItcsh.hh"
-#endif
+#include "ActionInitialization.hh"
 
 #include "PhysicsList.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-
-#ifdef G4VIS_USE
-#include "G4VisExecutive.hh"
-#endif
-
-#ifdef G4UI_USE
-#include "G4UIExecutive.hh"
-#endif
-
-#include "Randomize.hh"
-#include "globals.hh"
-
-#include "G4ios.hh"
-#include "fstream"
-#include "iomanip"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -49,29 +27,14 @@ int main(int argc, char** argv)
 	// set mandatory initialization classes
 	runManager->SetUserInitialization(GeometryManager::GetInstance());
 	runManager->SetUserInitialization(new PhysicsList);
-		
-	// set aditional user action classes
-	RunAction* run = new RunAction;
-	runManager->SetUserAction(run);
+
+  // Implementation of G4VUserActionInitialization
+  auto actionInitialization = new ActionInitialization();
+  runManager->SetUserInitialization(actionInitialization);
 	
-	EventAction* event = new EventAction(run);
-	runManager->SetUserAction(event);
-	
-	SteppingAction* step = new SteppingAction(event);
-	runManager->SetUserAction(step);
-	
-//#ifdef G4VIS_USE
   // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive;
-  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-  // G4VisManager* visManager = new G4VisExecutive("Quiet");
   visManager->Initialize();
-//#endif
-  // initialize G4 kernel
-//  runManager->Initialize();
-  
-  // set mandatory user action class
-  runManager->SetUserAction(new PrimaryGeneratorAction);
 
   // Get the pointer to the User Interface manager
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
@@ -97,6 +60,7 @@ int main(int argc, char** argv)
   // in the main() program !
   
   delete visManager;
+  delete UImanager;
   delete runManager;
 
   return 0;

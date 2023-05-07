@@ -17,6 +17,7 @@ class EventAction : public G4UserEventAction
 {
   public:
     EventAction(RunAction*);
+    EventAction() : G4UserEventAction() {}
     ~EventAction();
 
   public:

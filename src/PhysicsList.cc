@@ -10,29 +10,118 @@
 
 #include "PhysicsList.hh"
 
-#include "G4EmStandardPhysics.hh"
-#include "G4OpticalPhysics.hh"
-//#include "G4OpticalProcessIndex.hh"
-
-#include "G4ParticleTypes.hh"
-
 #include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
+
+#include "G4EmStandardPhysics.hh"
+#include "G4EmExtraPhysics.hh"
+#include "G4EmParameters.hh"
+#include "G4DecayPhysics.hh"
+#include "G4NuclideTable.hh"
+#include "BiasedRDPhysics.hh"
+#include "G4HadronElasticPhysics.hh"
+#include "G4HadronPhysicsFTFP_BERT.hh"
+#include "G4HadronInelasticQBBC.hh"
+#include "G4HadronPhysicsINCLXX.hh"
+#include "G4IonElasticPhysics.hh"
+#include "G4IonPhysics.hh"
+#include "G4IonINCLXXPhysics.hh"
+
+#include "G4EmLivermorePhysics.hh"
+#include "G4EmPenelopePhysics.hh"
+
+// particles
+
+#include "G4BosonConstructor.hh"
+#include "G4LeptonConstructor.hh"
+#include "G4MesonConstructor.hh"
+#include "G4BosonConstructor.hh"
+#include "G4BaryonConstructor.hh"
+#include "G4IonConstructor.hh"
+#include "G4ShortLivedConstructor.hh"
 
 
 PhysicsList::PhysicsList() : G4VModularPhysicsList()
 {
-	// default cut value  (0.1 mm)
-	defaultCutValue = 0.1*mm;
+	G4int verb = 1;
+	SetVerboseLevel(verb);
+
+	//Add new units for radioActive decays
+  	new G4UnitDefinition( "millielectronVolt", "meV", "Energy", 1.e-3*eV);    
+  	const G4double minute = 60*second;
+  	const G4double hour   = 60*minute;
+  	const G4double day    = 24*hour;
+  	const G4double year   = 365*day;
+  	new G4UnitDefinition("minute", "min", "Time", minute);
+  	new G4UnitDefinition("hour",   "h",   "Time", hour);
+  	new G4UnitDefinition("day",    "d",   "Time", day);
+  	new G4UnitDefinition("year",   "y",   "Time", year);
+
+	// Mandatory for G4NuclideTable
+  	// Half-life threshold must be set small or many short-lived isomers 
+  	// will not be assigned life times (default to 0) 
+  	G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
+  	G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
 	
-	// EM Physics
-	RegisterPhysics(new G4EmStandardPhysics());
-	
+	// Livermore physics
+  	RegisterPhysics( new G4EmPenelopePhysics());
+  
+  	// Decay
+  	RegisterPhysics( new G4DecayPhysics());
+
+  	// Radioactive decay
+  	RegisterPhysics( new BiasedRDPhysics());
+            
+  	// Hadron Elastic scattering
+  	RegisterPhysics( new G4HadronElasticPhysics(verb) );
+  
+  	// Hadron Inelastic physics
+  	RegisterPhysics( new G4HadronPhysicsFTFP_BERT(verb));
+  	////RegisterPhysics( new G4HadronInelasticQBBC(verb));        
+  	////RegisterPhysics( new G4HadronPhysicsINCLXX(verb));
+  
+  	// Ion Elastic scattering
+  	RegisterPhysics( new G4IonElasticPhysics(verb));
+      
+  	// Ion Inelastic physics
+  	RegisterPhysics( new G4IonPhysics(verb));
+  	////RegisterPhysics( new G4IonINCLXXPhysics(verb));
+
+	// Gamma-Nuclear Physics
+  	G4EmExtraPhysics* gnuc = new G4EmExtraPhysics(verb);
+  	gnuc->ElectroNuclear(true);
+  	gnuc->MuonNuclear(true);
+  	RegisterPhysics(gnuc);
 }
 
 
 PhysicsList::~PhysicsList() {}
 
-void PhysicsList::SetCuts(){
-	
-	SetCutsWithDefault();
+void PhysicsList::ConstructParticle()
+{
+  G4BosonConstructor  pBosonConstructor;
+  pBosonConstructor.ConstructParticle();
+
+  G4LeptonConstructor pLeptonConstructor;
+  pLeptonConstructor.ConstructParticle();
+
+  G4MesonConstructor pMesonConstructor;
+  pMesonConstructor.ConstructParticle();
+
+  G4BaryonConstructor pBaryonConstructor;
+  pBaryonConstructor.ConstructParticle();
+
+  G4IonConstructor pIonConstructor;
+  pIonConstructor.ConstructParticle();
+
+  G4ShortLivedConstructor pShortLivedConstructor;
+  pShortLivedConstructor.ConstructParticle();  
+}
+
+void PhysicsList::SetCuts()
+{
+  SetCutValue(0.01*mm, "proton");
+  SetCutValue(0.01*mm, "e-");
+  SetCutValue(0.01*mm, "e+");
+  SetCutValue(0.01*mm, "gamma");      
 }

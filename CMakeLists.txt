@@ -23,17 +23,21 @@ endif()
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+find_package(ROOT REQUIRED COMPONENTS RIO Net)
+include(${ROOT_USE_FILE})
+include_directories(${ROOT_INCLUDE_DIR})
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/geometry/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/geometry/**.hh)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/geometry/*.cc ${PROJECT_SOURCE_DIR}/src/generator/PositronGun/*.cc ${PROJECT_SOURCE_DIR}/src/generator/NuclideGen/*.cc ${PROJECT_SOURCE_DIR}/src/generator/IsotropicGun/*.cc ${PROJECT_SOURCE_DIR}/src/generator/GammaDecayScheme/*.cc)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/geometry/*.hh ${PROJECT_SOURCE_DIR}/include/generator/GammaDecayScheme/*.hh ${PROJECT_SOURCE_DIR}/include/generator/IsotropicGun/*.hh ${PROJECT_SOURCE_DIR}/include/generator/PositronGun/*.hh ${PROJECT_SOURCE_DIR}/include/generator/NuclideGen/*.hh)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(G4_LaBr ${sources} ${headers})
-target_link_libraries(G4_LaBr ${Geant4_LIBRARIES})
+target_link_libraries(G4_LaBr ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Creates the data directory
@@ -44,6 +48,7 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/data)
 # Copy all scripts to the build directory
 #
 file(COPY ${PROJECT_SOURCE_DIR}/mac DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/data DESTINATION ${PROJECT_BINARY_DIR})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
