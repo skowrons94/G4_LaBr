@@ -11,12 +11,12 @@
 
 /Geometry/LaBr2Detector/rotateY 180 deg
 
-/PrimaryGenerator/select GammaDecayScheme
-/PrimaryGenerator/GammaDecayScheme/position 0 0 10 cm
-/PrimaryGenerator/GammaDecayScheme/levelFile data/F18.txt
-/PrimaryGenerator/GammaDecayScheme/excitedState 5673 keV
+/PrimaryGenerator/select NuclideGun
+/PrimaryGenerator/NuclideGun/mass 22
+/PrimaryGenerator/NuclideGun/charge 11
+/PrimaryGenerator/NuclideGun/position 0 0 -10 cm
 
-/run/setFileName sim.root
+/run/setFileName 22na_sim.root
 
 /run/initialize
 

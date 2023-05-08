@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////
 
-#include "geometry/LaBrDetector.hh"
+#include "geometry/LaBr2Detector.hh"
 #include "Analysis.hh"
 
 #include "G4NistManager.hh"
@@ -36,7 +36,7 @@ using namespace CLHEP;
 #include <memory>
 using std::make_shared;
 
-G4VPhysicalVolume* LaBrDetector::Construct()
+G4VPhysicalVolume* LaBr2Detector::Construct()
 {
 	
 	//----------------------------------------------------
@@ -160,17 +160,17 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 		ScintRadius
 	};
 	
-	G4Polycone* solidCrystal = new G4Polycone("PMT",StartPhi,DeltaPhi,crystalNZPlanes,
+	G4Polycone* solidCrystal = new G4Polycone("LaBr2Crystal",StartPhi,DeltaPhi,crystalNZPlanes,
 										      crystalZPlanes,crystalRInner,crystalROuter);
 	
 	G4LogicalVolume* logicCrystal = new G4LogicalVolume(solidCrystal,LaBr3,
-														"Crystal");
+														"LaBr2Crystal");
 	
 	G4ThreeVector positionCrystal = G4ThreeVector(0.*cm,0.*cm,ScintStart);
 	
-	G4VPhysicalVolume* physiCrystal = new G4PVPlacement(0,positionCrystal,
-														logicCrystal, "Crystal",
-														GetMotherVolume(),false,0);
+	//G4VPhysicalVolume* physiCrystal = new G4PVPlacement(0,positionCrystal,
+	//													logicCrystal, "LaBr2Crystal",
+	//													GetMotherVolume(),false,0);
 	
 	
 	// PMT
@@ -204,17 +204,17 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 		PMTRadiusLow
 	};
 
-	G4Polycone* solidPMT = new G4Polycone("PMT",StartPhi,DeltaPhi,pmtNZPlanes,
+	G4Polycone* solidPMT = new G4Polycone("LaBr2PMT",StartPhi,DeltaPhi,pmtNZPlanes,
 									      pmtZPlanes,pmtRInner,pmtROuter);
 	
 	G4LogicalVolume* logicPMT = new G4LogicalVolume(solidPMT,
-													Quartz,"PMT");
+													Quartz,"LaBr2PMT");
 	
 	G4ThreeVector positionPMT = G4ThreeVector(0.*cm,0.*cm,PMTStart);
 	
-	G4VPhysicalVolume* physiPMT = new G4PVPlacement(0,positionPMT,
-													logicPMT,"PMT",
-													GetMotherVolume(),false,0);
+	//G4VPhysicalVolume* physiPMT = new G4PVPlacement(0,positionPMT,
+	//												logicPMT,"LaBr2PMT",
+	//												GetMotherVolume(),false,0);
 
 	// Reflector
 
@@ -245,17 +245,17 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 		ReflectorRadiusOuter
 	};
 
-	G4Polycone* solidReflector = new G4Polycone("PMT",StartPhi,DeltaPhi,reflectorNZPlanes,
+	G4Polycone* solidReflector = new G4Polycone("LaBr2Reflector",StartPhi,DeltaPhi,reflectorNZPlanes,
 											    reflectorZPlanes,reflectorRInner,reflectorROuter);
 
 	G4LogicalVolume* logicReflector = new G4LogicalVolume(solidReflector,Teflon,
-														  "Reflector");
+														  "LaBr2Reflector");
 	
 	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0);
 	
-	G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
-														  logicReflector,"Reflector",
-														  GetMotherVolume(),false,0);
+	//G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
+	//													  logicReflector,"LaBr2Reflector",
+	//													  GetMotherVolume(),false,0);
 
 	// Housing
 
@@ -312,17 +312,17 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 		HousingRadiusHigh
 	};
 
-	G4Polycone* solidHousing = new G4Polycone("PMT",StartPhi,DeltaPhi,housingNZPlanes,
+	G4Polycone* solidHousing = new G4Polycone("LaBr2Housing",StartPhi,DeltaPhi,housingNZPlanes,
 											  housingZPlanes,housingRInner,housingROuter);
 
 	G4LogicalVolume* logicHousing = new G4LogicalVolume(solidHousing,Al,
-														"Housing");
+														"LaBr2Housing");
 	
 	G4ThreeVector positionHousing = G4ThreeVector(0.*cm,0.*cm,0);
 	
-	G4VPhysicalVolume* physiHousing = new G4PVPlacement(0,positionHousing,
-														logicHousing,"Housing",
-														GetMotherVolume(),false,0);
+	//G4VPhysicalVolume* physiHousing = new G4PVPlacement(0,positionHousing,
+	//													logicHousing,"LaBr2Housing",
+	//													GetMotherVolume(),false,0);
 	
 	//------------------------------------------------------
 	// visualization attributes
@@ -344,54 +344,49 @@ G4VPhysicalVolume* LaBrDetector::Construct()
 	G4VisAttributes* white= new G4VisAttributes(G4Colour(0.8,0.8,0.8));
 	logicReflector->SetVisAttributes(white);
     
-	//
 	// Place the logic volumes
-	//
-
-	/*
-	PlaceVolume(logicCrystal, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
-	PlaceVolume(logicReflector, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
-	PlaceVolume(logicPMTWindow, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
-	PlaceVolume(logicCathode, GetMotherVolume(),G4ThreeVector(0,0,0), G4RotationMatrix());
-	*/
+	PlaceVolume(logicCrystal, GetMotherVolume(),positionCrystal, G4RotationMatrix());
+	PlaceVolume(logicReflector, GetMotherVolume(),positionReflector, G4RotationMatrix());
+	PlaceVolume(logicPMT, GetMotherVolume(),positionPMT, G4RotationMatrix());
+	PlaceVolume(logicHousing, GetMotherVolume(),positionHousing, G4RotationMatrix());
 
 	return nullptr;
 }
 
-void LaBrDetector::ConstructSDandField()
+void LaBr2Detector::ConstructSDandField()
 {
-    // Energy deposition in the BGO crystals is tracked with a primitive scorer
+    // Energy deposition in the LaBr crystals is tracked with a primitive scorer
 
     // attempts to delete this pointer in the destructor result in error,
     // apparently detectors are cleaned up by Geant4
-    auto *det = new G4MultiFunctionalDetector("LaBrCrystal");
+    auto *det = new G4MultiFunctionalDetector("LaBr2Crystal");
     G4SDManager::GetSDMpointer()->AddNewDetector(det);
 
     auto *psEdep = new G4PSEnergyDeposit("Edep",1);
     det->RegisterPrimitive(psEdep);
 
-    SetSensitiveDetector( "Crystal", det);
+    SetSensitiveDetector( "LaBr2Crystal", det);
 }
 
-void LaBrDetector::SetupOutput()
+void LaBr2Detector::SetupOutput()
 {
     auto *am = G4AnalysisManager::Instance();
 
-    fTupleID = am->CreateNtuple("EdepLaBr", "Energy Deposition in LaBr detector");
+    fTupleID = am->CreateNtuple("EdepLaBr2", "Energy Deposition in La2Br detector");
 
-    G4cout << "LaBrDetector::SetupOutput - " << fTupleID << G4endl;
+    G4cout << "LaBr2Detector::SetupOutput - " << fTupleID << G4endl;
 
-    am->CreateNtupleDColumn("LaBr");
+    am->CreateNtupleDColumn("LaBr2");
  
     am->FinishNtuple();
 }
 
-void LaBrDetector::FillOutput(const G4Event *event)
+void LaBr2Detector::FillOutput(const G4Event *event)
 {
     // Get hit collection ID
     if (fHCID == -1 )
     {
-        fHCID = G4SDManager::GetSDMpointer()->GetCollectionID("LaBrCrystal/Edep");
+        fHCID = G4SDManager::GetSDMpointer()->GetCollectionID("LaBr2Crystal/Edep");
     }
 
     // Get sum values from hits collections

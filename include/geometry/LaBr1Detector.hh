@@ -1,6 +1,6 @@
 
-#ifndef LaBrDetector_h
-#define LaBrDetector_h
+#ifndef LaBr1Detector_h
+#define LaBr1Detector_h
 
 #include "geometry/GeometryObject.hh"
 
@@ -12,11 +12,11 @@ using std::shared_ptr;
 class G4MultiFunctionalDetector;
 class G4PSEnergyDeposit;
 
-class LaBrDetector : public GeometryObject
+class LaBr1Detector : public GeometryObject
 {
   public:
-    LaBrDetector() : GeometryObject("LaBrDetector") {}
-    ~LaBrDetector() {}
+    LaBr1Detector() : GeometryObject("LaBr1Detector") {}
+    ~LaBr1Detector() {}
 
     G4VPhysicalVolume* Construct();
 

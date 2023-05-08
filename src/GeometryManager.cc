@@ -3,7 +3,8 @@
 
 #include "geometry/GeometryObject.hh"
 
-#include "geometry/LaBrDetector.hh"
+#include "geometry/LaBr1Detector.hh"
+#include "geometry/LaBr2Detector.hh"
 
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
@@ -45,8 +46,8 @@ GeometryManager::GeometryManager() :
     }
 
     /// Fill the list of possible geometry objects
-    m_allGeometries.push_back(make_shared<LaBrDetector>());
-    // ...
+    m_allGeometries.push_back(make_shared<LaBr1Detector>());
+    m_allGeometries.push_back(make_shared<LaBr2Detector>());
 
     GeometryManager::instance = this;
 }

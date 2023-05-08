@@ -3,8 +3,13 @@
 /control/verbose 2
 /run/verbose 2
 
-/Geometry/add LaBrDetector
-/Geometry/LaBrDetector/position 0 0 0 cm
+/Geometry/add LaBr1Detector
+/Geometry/add LaBr2Detector
+
+/Geometry/LaBr1Detector/position 0 0 0 cm
+/Geometry/LaBr2Detector/position 0 0 -20 cm
+
+/Geometry/LaBr2Detector/rotateY 180 deg
 
 /PrimaryGenerator/select NuclideGun
 /PrimaryGenerator/NuclideGun/mass 137
