@@ -16,6 +16,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4Polycone.hh"
+#include "G4Hype.hh"
 #include "G4LogicalVolume.hh"
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
@@ -114,7 +115,7 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 	LaBr3->AddElement(La, natoms=1);
 	
 	// Quartz
-	density = 2.20*g/cm3;
+	density = 2.2*g/cm3;
 	G4Material* Quartz = new G4Material(name="Quartz", density, ncomponents=2);
 	Quartz->AddElement(Si, natoms=1);
 	Quartz->AddElement(O, natoms=2);
@@ -130,16 +131,17 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 
 	G4double ScintLength = 15.24*cm;
 
-	G4double ReflectorStart = 2*mm;
-	G4double ScintStart = 5*mm;
+	G4double ReflectorStart = 3.3245*mm;
+	G4double ScintStart = 6.3245 *mm;
 	G4double PMTStart = ScintStart + ScintLength;
+	G4double CrystalFin = ScintStart + ScintLength;
 
 	G4double StartPhi = 0.*deg;
 	G4double DeltaPhi = 360.*deg;	
 	
 	//Crystal
 
-	G4double ScintRadius = 4.45*cm;
+	G4double ScintRadius = 4.133*cm;
 
 	const  G4int  crystalNZPlanes = 2;
 	const  G4double crystalZPlanes[] =
@@ -175,21 +177,25 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 	
 	// PMT
 
-	G4double PMTLength = 17.1*cm;
-	G4double PMTRadiusLarge = 6.4*cm;
-	G4double PMTRadiusLow = 2.9*cm;
+	G4double PMTLength = 15.8*cm;
+	G4double PMTRadiusLarge = 6.6*cm;
+	G4double PMTRadiusLow = 2.6*cm;
 
-	const  G4int  pmtNZPlanes = 4;
+	const  G4int  pmtNZPlanes = 6;
 	const  G4double pmtZPlanes[] =
 	{
 		0,
-		PMTLength/3,
-		2*PMTLength/3,
+		5.6*cm,
+		7.15*cm,
+		8.29*cm,
+		10.03*cm,
 		PMTLength
 	};
 
 	const G4double pmtRInner[] =
 	{
+		0,
+		0,
 		0,
 		0,
 		0,
@@ -200,12 +206,15 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 	{
 		PMTRadiusLarge,
 		PMTRadiusLarge,
+		5.15*cm,
+		3.6*cm,
 		PMTRadiusLow,
 		PMTRadiusLow
 	};
 
-	G4Polycone* solidPMT = new G4Polycone("LaBr1PMT",StartPhi,DeltaPhi,pmtNZPlanes,
-									      pmtZPlanes,pmtRInner,pmtROuter);
+	G4Polycone* solidPMT = new G4Polycone("LaBr1PMT",StartPhi,DeltaPhi,pmtNZPlanes,pmtZPlanes,pmtRInner,pmtROuter);
+
+	//G4Hype* solidPMT = new G4Hype("LaBr1PMT", 0. * cm, PMTRadiusLarge, 0., 0., 2 * cm);
 	
 	G4LogicalVolume* logicPMT = new G4LogicalVolume(solidPMT,
 													Quartz,"LaBr1PMT");
@@ -218,7 +227,7 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 
 	// Reflector
 
-	G4double ReflectorRadiusOuter = 4.7*cm;
+	G4double ReflectorRadiusOuter = 4.433 *cm;
 
 	const  G4int  reflectorNZPlanes = 4;
 	const  G4double reflectorZPlanes[] =
@@ -226,7 +235,7 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 		ReflectorStart,
 		ScintStart,
 		ScintStart,
-		PMTStart
+		CrystalFin
 	};
 
 	const G4double reflectorRInner[] =
@@ -251,7 +260,7 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 	G4LogicalVolume* logicReflector = new G4LogicalVolume(solidReflector,Teflon,
 														  "LaBr1Reflector");
 	
-	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0);
+	G4ThreeVector positionReflector = G4ThreeVector(0.*cm,0.*cm,0.*cm);
 	
 	//G4VPhysicalVolume* physiReflector = new G4PVPlacement(0,positionReflector,
 	//													  logicReflector,"LaBr1Reflector",
@@ -259,57 +268,64 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 
 	// Housing
 
-	G4double HousingLengthLow = 14.9*cm;
+	G4double HousingLengthLow = 14.46*cm;
 	G4double HousingLengthHigh = 18.4*cm;
 	
 	G4double HousingRadiusLow = 4.9*cm;
-	G4double HousingRadiusMid = 7.25*cm;
+	G4double HousingRadiusMid = 7.23*cm;
 	G4double HousingRadiusHigh = 3.0*cm;
 
-	const  G4int  housingNZPlanes = 11;
+	const  G4int  housingNZPlanes = 13;
 	const  G4double housingZPlanes[] =
 	{
-		0,
-		ReflectorStart,
-		ReflectorStart,
-		HousingLengthLow,
-		HousingLengthLow,
-		PMTStart,
-		PMTStart,
-		HousingLengthLow + HousingLengthHigh/3,
-		HousingLengthLow + 2*HousingLengthHigh/3,
-		HousingLengthLow + HousingLengthHigh,
-		HousingLengthLow + HousingLengthHigh
+		/*1*/ 0,
+		0.8*mm,
+		/*2*/ ReflectorStart,
+		/*3*/ ReflectorStart,
+		/*4*/ HousingLengthLow,
+		/*5*/ 14.9*cm,
+		/*6*/ 14.9*cm,
+		/*7*/ PMTStart,
+		/*8*/ PMTStart,
+		/*9*/ HousingLengthLow + 7.23*cm,
+		/*10*/ HousingLengthLow + 11.51*cm,
+		/*11*/ PMTStart+PMTLength,
+		/*12*/ HousingLengthLow + 17.56*cm
 	};
 
 	const G4double housingRInner[] =
 	{
-		0,
-		0,
-		ReflectorRadiusOuter,
-		ReflectorRadiusOuter,
-		ReflectorRadiusOuter,
-		ReflectorRadiusOuter,
-		PMTRadiusLarge,
-		PMTRadiusLarge,
-		PMTRadiusLow,
-		PMTRadiusLow,
-		0
+		/*1*/ 4.53*cm,
+		4.45*cm,
+		/*2*/ 0,
+		/*3*/ ReflectorRadiusOuter,
+		/*4*/ ReflectorRadiusOuter,
+		/*5*/ ReflectorRadiusOuter,
+		/*6*/ ReflectorRadiusOuter,
+		/*7*/ ReflectorRadiusOuter,
+		/*8*/ PMTRadiusLarge,
+		/*9*/ PMTRadiusLarge,
+		/*10*/ PMTRadiusLow,
+		/*11*/ PMTRadiusLow,
+		/*12*/ 0
+
 	};
 
 	const G4double housingROuter[] =
 	{
-		HousingRadiusLow,
-		HousingRadiusLow,
-		HousingRadiusLow,
-		HousingRadiusLow,
-		HousingRadiusMid,
-		HousingRadiusMid,
-		HousingRadiusMid,
-		HousingRadiusMid,
-		HousingRadiusHigh,
-		HousingRadiusHigh,
-		HousingRadiusHigh
+		/*1*/ HousingRadiusLow,
+		 HousingRadiusLow,
+		/*2*/ HousingRadiusLow,
+		/*3*/ HousingRadiusLow,
+		/*4*/ HousingRadiusLow,
+		/*5*/ HousingRadiusLow + 0.4 * cm,
+		/*6*/ HousingRadiusMid,
+		/*7*/ HousingRadiusMid,
+		/*8*/ HousingRadiusMid,
+		/*9*/ HousingRadiusMid,
+		/*10*/ HousingRadiusHigh,
+		/*11*/ HousingRadiusHigh,
+		/*12*/ HousingRadiusHigh
 	};
 
 	G4Polycone* solidHousing = new G4Polycone("LaBr1Housing",StartPhi,DeltaPhi,housingNZPlanes,
@@ -326,18 +342,18 @@ G4VPhysicalVolume* LaBr1Detector::Construct()
 	
 	//------------------------------------------------------
 	// visualization attributes
-	//------------------------------------------------------
+	//-------------------------------------------------------
 	
 	//Green color for crystal
-	G4VisAttributes* green= new G4VisAttributes(G4Colour(0.0,1.0,0.0));
-	logicCrystal->SetVisAttributes(green);
+	G4VisAttributes* red= new G4VisAttributes(G4Colour(1.5,0.0,1.0));
+	logicCrystal->SetVisAttributes(red);
 	
 	//Blue color for PMT
 	G4VisAttributes* blue= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
 	logicPMT->SetVisAttributes(blue);
 
 	//Grey color for housing
-	G4VisAttributes* grey= new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+	G4VisAttributes* grey= new G4VisAttributes(G4Colour(0.6,0.6,0.6));
 	logicHousing->SetVisAttributes(grey);
 
 	//White color for the reflector
