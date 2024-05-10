@@ -20,7 +20,7 @@
 /PrimaryGenerator/NuclideGun/charge 11
 /PrimaryGenerator/NuclideGun/position 1 0 -10 cm
 
-/run/setFileName 22na_sim.root
+/run/setFileName 22Na.root
 
 /run/initialize
 

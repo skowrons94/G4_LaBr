@@ -54,6 +54,9 @@ G4VPhysicalVolume* TargetChamber::Construct()
 	G4double temperature = 2.73*kelvin;
 	density     = 1.e-25*g/cm3;
 
+	G4Material* Vacuum = new G4Material(name="Galactic", z=1., a=1.01*g/mole, 
+										density,kStateGas,temperature,pressure);
+
 	//
 	// define elements
 	//
@@ -119,6 +122,32 @@ G4VPhysicalVolume* TargetChamber::Construct()
 	G4LogicalVolume* logicHolder = new G4LogicalVolume(mesh->GetSolid(), cp, "TargetChamber", 0, 0, 0);
 	G4ThreeVector positionHolder = G4ThreeVector(0,0,0);
 	PlaceVolume(logicHolder, GetMotherVolume(), positionHolder, G4RotationMatrix());
+
+	/*
+	fParser.Read("mesh/chamber.gdml");
+
+	G4LogicalVolume* logicVol;
+	G4ThreeVector positionHolder = G4ThreeVector(0,0,0);
+
+	logicVol = fParser.GetVolume("V-boccola guida bersaglio-15");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-asta guida portabersaglio-16");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-KF20-55-2");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-SOLID-3");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-KF20xORi-4");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-flangia collimatore-5");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-KF20-25_Collare-6");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-portabersaglio_4-8");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	logicVol = fParser.GetVolume("V-tappo portabersaglio_1-9");
+	PlaceVolume(logicVol, GetMotherVolume(), positionHolder, G4RotationMatrix());
+	*/
 
 	return nullptr;
 }

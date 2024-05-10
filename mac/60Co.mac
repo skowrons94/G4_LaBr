@@ -20,7 +20,7 @@
 /PrimaryGenerator/NuclideGun/charge 27
 /PrimaryGenerator/NuclideGun/position 0 0 -10 cm
 
-/run/setFileName 60co_sim.root
+/run/setFileName 60Co.root
 
 /run/initialize
 

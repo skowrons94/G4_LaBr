@@ -1,6 +1,9 @@
 settings.json
 .cache/
 build/
-data/*
 .DS_Store
 .vscode/c_cpp_properties.json
+*.root
+*.pkl
+*.png
+*.pdf

@@ -3,6 +3,7 @@
 #define TargetChamber_h
 
 #include "geometry/GeometryObject.hh"
+#include "G4GDMLParser.hh"
 
 class G4VPhysicalVolume;
 
@@ -29,6 +30,9 @@ class TargetChamber : public GeometryObject
     int fHCID = -1; /// Hit collection ID for energy deposition scorer
     int fTupleID = -1; /// tuple ID for energy deposition output
 
+    // GDMLparser
+    G4GDMLParser fParser;
+        
 };
 
 #endif

@@ -21,7 +21,7 @@
 /PrimaryGenerator/IsotropicGun/energy 1 MeV
 /PrimaryGenerator/IsotropicGun/number 1
 
-/run/setFileName vis.root
+/run/setFileName temp.root
 
 /run/initialize
 

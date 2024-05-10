@@ -20,7 +20,7 @@
 /PrimaryGenerator/NuclideGun/charge 55
 /PrimaryGenerator/NuclideGun/position 0 0 -10 cm
 
-/run/setFileName 137cs_sim.root
+/run/setFileName 137Cs.root
 
 /run/initialize
 

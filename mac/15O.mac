@@ -17,10 +17,10 @@
 
 /PrimaryGenerator/select NuclideGun
 /PrimaryGenerator/NuclideGun/mass 15
-/PrimaryGenerator/NuclideGun/charge 7
+/PrimaryGenerator/NuclideGun/charge 8
 /PrimaryGenerator/NuclideGun/position 0 0 -10 cm
 
-/run/setFileName 15o.root
+/run/setFileName 15O.root
 
 /run/initialize
 
