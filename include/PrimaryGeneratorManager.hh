@@ -25,7 +25,6 @@ class NuclideGunGen;
 /// Allows to select among the primary generator actions to be used.
 ///
 
-
 class PrimaryGeneratorManager : public G4VUserPrimaryGeneratorAction, public G4UImessenger
 {
 public:

@@ -5,14 +5,24 @@
 //                                                     //
 /////////////////////////////////////////////////////////
 
-#include "G4RunManager.hh"
-#include "G4UImanager.hh"
-
 #include "GeometryManager.hh"
 
 #include "ActionInitialization.hh"
 
+#ifdef G4MULTITHREADED
+#include "G4MTRunManager.hh"
+#else
+#include "G4RunManager.hh"
+#endif
+
+#include "G4UImanager.hh"
+
+#include "G4PhysListFactory.hh"
+#include "G4VModularPhysicsList.hh"
+
 #include "PhysicsList.hh"
+
+#include "Randomize.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -21,8 +31,11 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+
+  G4Random::setTheEngine(new CLHEP::RanecuEngine);
 	// construct the default run manager
-	G4RunManager* runManager = new G4RunManager;
+
+    auto runManager = new G4RunManager;
 	
 	// set mandatory initialization classes
 	runManager->SetUserInitialization(GeometryManager::GetInstance());

@@ -5,16 +5,20 @@
 
 /Geometry/add LaBr1Detector
 /Geometry/add LaBr2Detector
+/Geometry/add TargetChamber
 
 /Geometry/LaBr1Detector/position 0 0 0 cm
 /Geometry/LaBr2Detector/position 0 0 -20 cm
+/Geometry/TargetChamber/position 0 -8 -10 cm
+/Geometry/TargetChamber/rotateX 90 deg
+/Geometry/TargetChamber/rotateZ 180 deg
 
 /Geometry/LaBr2Detector/rotateY 180 deg
 
 /PrimaryGenerator/select NuclideGun
 /PrimaryGenerator/NuclideGun/mass 22
 /PrimaryGenerator/NuclideGun/charge 11
-/PrimaryGenerator/NuclideGun/position 0 0 -10 cm
+/PrimaryGenerator/NuclideGun/position 1 0 -10 cm
 
 /run/setFileName 22na_sim.root
 

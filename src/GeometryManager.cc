@@ -5,6 +5,9 @@
 
 #include "geometry/LaBr1Detector.hh"
 #include "geometry/LaBr2Detector.hh"
+#include "geometry/CeBrDetector.hh"
+#include "geometry/TargetHolder.hh"
+#include "geometry/TargetChamber.hh"
 
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
@@ -48,6 +51,9 @@ GeometryManager::GeometryManager() :
     /// Fill the list of possible geometry objects
     m_allGeometries.push_back(make_shared<LaBr1Detector>());
     m_allGeometries.push_back(make_shared<LaBr2Detector>());
+    m_allGeometries.push_back(make_shared<CeBrDetector>());
+    m_allGeometries.push_back(make_shared<TargetHolder>());
+    m_allGeometries.push_back(make_shared<TargetChamber>());
 
     GeometryManager::instance = this;
 }

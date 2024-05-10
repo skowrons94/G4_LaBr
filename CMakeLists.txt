@@ -42,13 +42,13 @@ target_link_libraries(G4_LaBr ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 #----------------------------------------------------------------------------
 # Creates the data directory
 #
-file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/data)
+#file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/data)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory
 #
 file(COPY ${PROJECT_SOURCE_DIR}/mac DESTINATION ${PROJECT_BINARY_DIR})
-file(COPY ${PROJECT_SOURCE_DIR}/data DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/mesh DESTINATION ${PROJECT_BINARY_DIR})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

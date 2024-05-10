@@ -5,6 +5,13 @@
 
 /Geometry/add LaBr1Detector
 /Geometry/add LaBr2Detector
+/Geometry/add TargetChamber
+
+/Geometry/LaBr1Detector/position 0 0 0 cm
+/Geometry/LaBr2Detector/position 0 0 -20 cm
+/Geometry/TargetChamber/position 0 -8 -10 cm
+/Geometry/TargetChamber/rotateX 90 deg
+/Geometry/TargetChamber/rotateZ 180 deg
 
 /Geometry/LaBr1Detector/position 0 0 0 cm
 /Geometry/LaBr2Detector/position 0 0 -20 cm
