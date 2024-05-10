@@ -7,20 +7,20 @@
 /Geometry/add LaBr2Detector
 /Geometry/add TargetChamber
 
-/Geometry/LaBr1Detector/position 0 0 0 cm
-/Geometry/LaBr2Detector/position 0 0 -20 cm
-/Geometry/TargetChamber/position 0 -8 -10 cm
+/Geometry/LaBr1Detector/position 0 0 ddd cm
+/Geometry/LaBr2Detector/position 0 0 -ddd cm
+/Geometry/TargetChamber/position 0 -8 0 cm
+
 /Geometry/TargetChamber/rotateX 90 deg
 /Geometry/TargetChamber/rotateZ 180 deg
-
 /Geometry/LaBr2Detector/rotateY 180 deg
 
 /PrimaryGenerator/select GammaDecayScheme
-/PrimaryGenerator/GammaDecayScheme/position 0 0 10 cm
+/PrimaryGenerator/GammaDecayScheme/position xxx yyy zzz cm
 /PrimaryGenerator/GammaDecayScheme/levelFile data/15O.txt
 /PrimaryGenerator/GammaDecayScheme/excitedState 7567 keV
 
-/run/setFileName 14N_pg.root
+/run/setFileName 14N_pg_dddcm.root
 
 /run/initialize
 

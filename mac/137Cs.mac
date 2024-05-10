@@ -7,20 +7,20 @@
 /Geometry/add LaBr2Detector
 /Geometry/add TargetChamber
 
-/Geometry/LaBr1Detector/position 0 0 0 cm
-/Geometry/LaBr2Detector/position 0 0 -20 cm
-/Geometry/TargetChamber/position 0 -8 -10 cm
+/Geometry/LaBr1Detector/position 0 0 ddd cm
+/Geometry/LaBr2Detector/position 0 0 -ddd cm
+/Geometry/TargetChamber/position 0 -8 0 cm
+
 /Geometry/TargetChamber/rotateX 90 deg
 /Geometry/TargetChamber/rotateZ 180 deg
-
 /Geometry/LaBr2Detector/rotateY 180 deg
 
 /PrimaryGenerator/select NuclideGun
 /PrimaryGenerator/NuclideGun/mass 137
 /PrimaryGenerator/NuclideGun/charge 55
-/PrimaryGenerator/NuclideGun/position 0 0 -10 cm
+/PrimaryGenerator/NuclideGun/position xxx yyy zzz cm
 
-/run/setFileName 137Cs.root
+/run/setFileName 137Cs_dddcms.root
 
 /run/initialize
 

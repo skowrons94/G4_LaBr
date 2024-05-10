@@ -49,6 +49,7 @@ target_link_libraries(G4_LaBr ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 #
 file(COPY ${PROJECT_SOURCE_DIR}/mac DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/mesh DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/Run.py DESTINATION ${PROJECT_BINARY_DIR})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
