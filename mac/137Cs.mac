@@ -20,7 +20,7 @@
 /PrimaryGenerator/NuclideGun/charge 55
 /PrimaryGenerator/NuclideGun/position xxx yyy zzz cm
 
-/run/setFileName 137Cs_dddcms.root
+/run/setFileName 137Cs_dddcm.root
 
 /run/initialize
 

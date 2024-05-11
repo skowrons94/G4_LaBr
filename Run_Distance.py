@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 file = sys.argv[1]
 
@@ -7,6 +8,9 @@ x, y, z = 0, 0, 0
 distances = [i for i in range(5, 15)]
 
 for d in distances:
+
+    # Wait for 2 seconds
+    subprocess.run(["sleep", "2"])
 
     with open(file, 'r') as f:
         lines = f.readlines()
@@ -23,4 +27,4 @@ for d in distances:
     with open("mac/run.mac", 'w') as f:
         f.writelines(lines)
 
-    os.system("./G4_LaBr mac/run.mac")
+    subprocess.run(["./G4_LaBr", "mac/run.mac"])
