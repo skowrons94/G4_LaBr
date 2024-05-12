@@ -19,7 +19,7 @@
 /run/initialize
 
 /PrimaryGenerator/select IsotropicGun
-/PrimaryGenerator/IsotropicGun/position 0 0 -10 cm
+/PrimaryGenerator/IsotropicGun/position 0 0 0 cm
 /PrimaryGenerator/IsotropicGun/energy 1 MeV
 /PrimaryGenerator/IsotropicGun/number 1
 

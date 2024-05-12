@@ -22,6 +22,6 @@
 /PrimaryGenerator/NuclideGun/charge 8
 /PrimaryGenerator/NuclideGun/position xxx yyy zzz cm
 
-/run/setFileName 15O_xxx_yyyy.root
+/run/setFileName 15O_yyy_zzz.root
 
 /run/beamOn 1000000
