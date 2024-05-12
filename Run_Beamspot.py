@@ -9,12 +9,14 @@ file = sys.argv[1]
 x, y, z, d = 0, 0, 0, 7
 
 # Create a histo for x and y
-xbins = np.linspace(-3, 3, 10)
-ybins = np.linspace(-3, 3, 10)
+xbins = np.arange(-3, 3.1, 0.3)
+ybins = np.arange(-3, 3.1, 0.3)
 
 for x in xbins:
     
     for y in ybins:
+
+        x, y = round(x, 1), round(y, 1) 
 
         # Wait for 2 seconds
         subprocess.run(["sleep", "2"])

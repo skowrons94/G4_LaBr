@@ -35,7 +35,11 @@ int main(int argc, char** argv)
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 	// construct the default run manager
 
+  #ifdef G4MULTITHREADED
+    auto runManager = new G4MTRunManager();
+  #else
     auto runManager = new G4RunManager;
+  #endif
 	
 	// set mandatory initialization classes
 	runManager->SetUserInitialization(GeometryManager::GetInstance());

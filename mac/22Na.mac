@@ -15,13 +15,13 @@
 /Geometry/TargetChamber/rotateZ 180 deg
 /Geometry/LaBr2Detector/rotateY 180 deg
 
+/run/initialize
+
 /PrimaryGenerator/select NuclideGun
 /PrimaryGenerator/NuclideGun/mass 22
 /PrimaryGenerator/NuclideGun/charge 11
 /PrimaryGenerator/NuclideGun/position xxx yyy zzz cm
 
 /run/setFileName 22Na_dddcm.root
-
-/run/initialize
 
 /run/beamOn 1000000

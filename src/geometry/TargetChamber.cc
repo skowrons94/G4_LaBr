@@ -118,7 +118,7 @@ G4VPhysicalVolume* TargetChamber::Construct()
 	// Positions
 	//
 
-	auto mesh = CADMesh::TessellatedMesh::FromSTL("/Users/kuba/Desktop/G4_LaBr/build/mesh/chamber.stl");
+	auto mesh = CADMesh::TessellatedMesh::FromSTL("mesh/chamber.stl");
 	G4LogicalVolume* logicHolder = new G4LogicalVolume(mesh->GetSolid(), cp, "TargetChamber", 0, 0, 0);
 	G4ThreeVector positionHolder = G4ThreeVector(0,0,0);
 	PlaceVolume(logicHolder, GetMotherVolume(), positionHolder, G4RotationMatrix());

@@ -16,13 +16,13 @@
 /Geometry/TargetChamber/rotateZ 180 deg
 /Geometry/LaBr2Detector/rotateY 180 deg
 
+/run/initialize
+
 /PrimaryGenerator/select IsotropicGun
 /PrimaryGenerator/IsotropicGun/position 0 0 -10 cm
 /PrimaryGenerator/IsotropicGun/energy 1 MeV
 /PrimaryGenerator/IsotropicGun/number 1
 
 /run/setFileName temp.root
-
-/run/initialize
 
 /control/execute mac/vis.mac
